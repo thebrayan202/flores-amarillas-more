@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carta para More — Flores Amarillas</title>
+<meta name="description" content="Carta romántica con girasoles animados, ramo, música y dos fases (20s cada una).">
+<meta property="og:title" content="Carta para More — 21 de septiembre">
+<meta property="og:description" content="Una sorpresa romántica con girasoles amarillos.">
+<meta property="og:type" content="website">
+<link rel="preload" as="image" href="img/snoopy_clean.png">
+<link rel="preload" as="image" href="fotos/foto1.jpeg">
+<link rel="preload" as="image" href="fotos/foto2.jpeg">
+<link rel="preload" as="image" href="fotos/foto3.jpeg">
+<style>
+:root{ --bg:#070709; --bg2:#0b0b10; --gold:#F6C90E; --amber:#D6AD00; --paper:#fffdf2; --ink:#3a2d00;
+  --outline:#dcbf30; --shadow:0 24px 70px rgba(0,0,0,.7); }
+*{box-sizing:border-box} html,body{height:100%}
+body{ margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+  color:#f9f3d0;background:var(--bg2);overflow-x:hidden; }
+#field{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.layer{position:absolute;left:0;right:0;bottom:-4px;height:58vh}
+.layer svg{position:absolute;bottom:0;filter:drop-shadow(0 10px 22px rgba(246,201,14,.16))}
+.layer.back{opacity:.5;transform:translateY(8px)}
+.layer.mid{opacity:.8}
+.layer.front{opacity:.95;transform:translateY(-6px)}
+.plant{animation:sway 7.8s ease-in-out infinite; transform-origin:50% 100%}
+@keyframes sway{50%{transform:rotate(2deg)}}
+.fireflies{position:fixed;inset:0;z-index:1;pointer-events:none}
+.fireflies span{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#ffe680,rgba(255,230,120,.3),transparent 70%);animation:blink 4.2s ease-in-out infinite}
+.fireflies span:nth-child(odd){animation-duration:5.2s}
+@keyframes blink{50%{opacity:.95;transform:translateY(-6px)}0%,100%{opacity:.25;transform:translateY(0)}}
+#petalsCanvas{position:fixed;inset:0;z-index:2;pointer-events:none}
+.wrap{position:relative;z-index:5;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.envelope-wrap{display:grid;place-items:center;gap:10px;cursor:pointer;user-select:none;position:relative}
+.snoopy-top{position:absolute;left:-110px;top:-40px;width:min(32vw,220px);filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
+.env{position:relative;width:min(86vw,600px);height:min(56vw,380px);}
+.env .base{position:absolute;inset:0;border-radius:16px;background:linear-gradient(180deg,#1a1a1a,#0e0e0e);border:1px solid #2a2300;box-shadow:var(--shadow)}
+.env .flap{position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(180deg,#2a2200,#1b1500);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transition:transform 1100ms cubic-bezier(.2,.8,.2,1);border-bottom:1px solid rgba(246,201,14,.35)}
+.env .seal{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 45% 35%, #fff5b8 0 40%, var(--gold) 65%, var(--amber) 100%);box-shadow:0 6px 16px rgba(246,201,14,.35)}
+.to{position:absolute;right:16px;bottom:12px;background:rgba(246,201,14,.12);border:1px dashed rgba(246,201,14,.45);padding:6px 10px;border-radius:10px;font-weight:700;color:#ffe58a}
+.hint{font-size:13px;color:#e8d46e;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.opened .flap{transform:rotateX(180deg)}
+.opened .seal{opacity:0;transition:opacity .5s ease}
+#bouquet{position:fixed;left:50%;bottom:-160px;transform:translateX(-50%);z-index:4;pointer-events:none;opacity:0}
+#bouquet.show{animation:rise 7.5s ease forwards}
+#bouquet.hide{opacity:0;transform:translate(-50%,-70vh) scale(1.1);transition:opacity .8s ease, transform .8s ease}
+@keyframes rise{ 0%{transform:translate(-50%,120px) scale(.9) rotate(-1deg);opacity:0} 20%{opacity:1}
+  60%{transform:translate(-50%,-24vh) scale(1.04);opacity:1} 100%{transform:translate(-50%,-42vh) scale(1.08);opacity:1} }
+.letter{margin-top:18px;width:min(94vw,980px);background:var(--paper);border:1px solid var(--outline);border-radius:22px;box-shadow:var(--shadow), 0 0 0 6px rgba(246,201,14,.08);padding:24px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .8s ease, transform .8s ease}
+.show .letter{opacity:1;transform:translateY(0);pointer-events:auto}
+.phase{display:none}
+.phase.active{display:block;animation:fade .8s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.letter .tag{display:inline-block;background:#fff4a8;border:1px solid var(--outline);color:#3a2d00;padding:6px 10px;border-radius:999px;font-size:12px;margin-bottom:8px}
+.letter h1{margin:0 0 6px;font-size:clamp(24px,4.6vw,40px);color:#3a2d00}
+.letter p.msg{margin:6px 0 10px;color:#5a4a00;white-space:pre-wrap;line-height:1.62}
+.type{border-right:2px solid #c79b00;padding-right:2px}
+.snoopy-inside{max-width:min(36vw,240px);float:right;margin:0 0 8px 12px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.18))}
+.reveal{display:flex;align-items:center;gap:10px;margin-top:8px;color:#8a6a00}
+.heart{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 50% 40%, #ffd86a, #ffc93a);box-shadow:0 10px 20px rgba(246,201,14,.35);display:grid;place-items:center;cursor:pointer;animation:pulse 1.8s ease-in-out infinite}
+.heart::before{content:"❤";font-size:22px;color:#6b4a00}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.small{font-size:12px;color:#9a7a00}
+.gallery{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:16px;margin-top:10px}
+.polaroid{background:#fff;padding:10px 10px 26px 10px;border-radius:6px;border:1px solid #eee0a6;box-shadow:0 18px 26px rgba(0,0,0,.18),0 0 0 4px rgba(246,201,14,.05);transform:rotate(var(--rot,-2deg));transition:transform .3s ease,box-shadow .3s ease,filter .3s ease;opacity:0;transform-origin:50% 40%;position:relative}
+.polaroid.show{opacity:1;animation:pop .6s ease forwards}
+.polaroid:hover{transform:rotate(0deg) scale(1.02);box-shadow:0 24px 36px rgba(0,0,0,.22),0 0 0 6px rgba(246,201,14,.08)}
+.polaroid img{width:100%;height:260px;object-fit:cover;object-position:center;border-radius:4px;filter:contrast(1.02) saturate(1.04)}
+.polaroid::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-2deg);width:74px;height:22px;background:linear-gradient(180deg,#ffe58a,#ffd966);border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.2);opacity:.9}
+.polaroid:nth-child(1){--rot:-3deg}.polaroid:nth-child(2){--rot:2.2deg}.polaroid:nth-child(3){--rot:-1.2deg}
+@media (max-width:980px){.gallery{grid-template-columns:1fr 1fr}.polaroid:nth-child(3){grid-column:1/-1}}
+#soundGate{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:10}
+#soundGate .box{background:#111;border:1px solid #423600;color:#ffe58a;padding:16px 20px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);text-align:center;max-width:92vw}
+#unlockSound{margin-top:10px;padding:10px 16px;border-radius:999px;border:1px solid #dcbf30;background:linear-gradient(180deg,#ffe58a,#ffc93a);color:#4a3800;font-weight:700;cursor:pointer}
+#diag{margin-top:8px;font-size:12px;opacity:.9;white-space:pre-wrap}
+.footer{ margin-top:14px;font-size:12px;color:#7a5f00;border-top:1px dashed #e8d46e;padding-top:10px;opacity:.9 }
+</style>
+</head>
+<body>
+
+<div id="field" aria-hidden="true">
+  <div class="layer back" id="layerBack"></div>
+  <div class="layer mid" id="layerMid"></div>
+  <div class="layer front" id="layerFront"></div>
+</div>
+
+<div class="fireflies" aria-hidden="true">
+  <span style="left:12%; top:30%"></span>
+  <span style="left:68%; top:42%"></span>
+  <span style="left:54%; top:20%"></span>
+  <span style="left:36%; top:62%"></span>
+</div>
+
+<canvas id="petalsCanvas"></canvas>
+
+<svg id="bouquet" width="340" height="480" viewBox="0 0 340 480" aria-hidden="true">
+  <defs><linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD54F"/><stop offset="1" stop-color="#FFC107"/></linearGradient></defs>
+  <g>
+    <rect x="144" y="414" width="56" height="26" rx="8" fill="url(#ribbon)" />
+    <path d="M170 430 C 120 330, 220 300, 170 240" stroke="#2e6b2e" stroke-width="12" fill="none"/>
+    <path d="M160 430 C 240 330, 120 300, 170 240" stroke="#2e6b2e" stroke-width="12" fill="none"/>
+    <path d="M150 430 C 110 340, 210 300, 170 260" stroke="#2e6b2e" stroke-width="10" fill="none"/>
+    <path d="M172 330 C 120 300, 110 280, 144 262" stroke="#2e6b2e" stroke-width="10" fill="none"/>
+    <path d="M176 360 C 220 320, 230 300, 196 282" stroke="#2e6b2e" stroke-width="10" fill="none"/>
+    <g transform="translate(170,220) scale(1.0)">
+      <g fill="#F6C90E" stroke="#D6AD00" stroke-width="2">
+        <ellipse rx="18" ry="46" transform="rotate(0) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(45) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(90) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(135) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(180) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(225) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(270) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(315) translate(0,-26)"/>
+      </g>
+      <circle r="16" fill="#7a5a00"/><circle r="10" fill="#ffd84d"/>
+    </g>
+    <g transform="translate(130,255) scale(0.95)">
+      <g fill="#F6C90E" stroke="#D6AD00" stroke-width="2">
+        <ellipse rx="18" ry="46" transform="rotate(0) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(45) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(90) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(135) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(180) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(225) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(270) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(315) translate(0,-26)"/>
+      </g>
+      <circle r="16" fill="#7a5a00"/><circle r="10" fill="#ffd84d"/>
+    </g>
+    <g transform="translate(210,255) scale(0.95)">
+      <g fill="#F6C90E" stroke="#D6AD00" stroke-width="2">
+        <ellipse rx="18" ry="46" transform="rotate(0) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(45) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(90) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(135) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(180) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(225) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(270) translate(0,-26)"/>
+        <ellipse rx="18" ry="46" transform="rotate(315) translate(0,-26)"/>
+      </g>
+      <circle r="16" fill="#7a5a00"/><circle r="10" fill="#ffd84d"/>
+    </g>
+  </g>
+</svg>
+
+<div class="wrap">
+  <div class="envelope-wrap" id="openArea" aria-label="Toca para abrir la carta">
+    <img class="snoopy-top" src="img/snoopy_clean.png" alt="Snoopy con corazón">
+    <div class="env" id="env">
+      <div class="base"></div><div class="flap"></div><div class="seal"></div>
+      <div class="to">Para: More</div>
+    </div>
+    <div class="hint">Toca el sobre para abrir 💛</div>
+  </div>
+
+  <article class="letter" id="letter" aria-label="Carta para More">
+    <section class="phase active" id="phase1">
+      <span class="tag">21 de septiembre • Flores amarillas para ti</span>
+      <h1>Para More</h1>
+      <img class="snoopy-inside" src="img/snoopy_clean.png" alt="Snoopy con corazón">
+      <p class="msg type" id="msg1">More, el cielo se viste de negro para que brillen más tus flores amarillas.
+Desde que llegaste, los días huelen a domingo y el ruido del mundo baja el volumen.
+Tu risa es mi canción favorita y tu abrazo, el lugar donde todo se ordena.
+Si tengo dudas, tus ojos las apagan; si hay frío, tu voz me abriga.
+
+Quiero que, cuando caigan los pétalos, pidamos el mismo deseo:
+quedarnos, como dos girasoles que miran al mismo sol incluso cuando está nublado.</p>
+      <div class="reveal"><div class="heart" id="goPhase2" title="Toca para continuar"></div><div class="small">Toca el corazón (o espera)…</div></div>
+    </section>
+
+    <section class="phase" id="phase2">
+      <span class="tag">Feliz 21 de septiembre</span>
+      <h1>Para More</h1>
+      <img class="snoopy-inside" src="img/snoopy_clean.png" alt="Snoopy con corazón">
+      <p class="msg type" id="msg2">Este 21 no solo quiero darte flores amarillas; quiero regalarte mis días y mis noches:
+los planes tontos y los importantes, el café tibio y las charlas que se alargan sin mirar el reloj.
+Quiero darte mi paciencia cuando haga falta y mi locura para bailar en la cocina;
+mi mano en la tuya cuando el mundo corra, y mis pausas para mirarte con calma.
+
+Quiero ser tu compañero de risas y tu refugio cuando el mundo pese.
+El abrigo de tus madrugadas frías y el aplauso de tus metas cumplidas.
+Quiero aprender tus silencios y cuidarte el corazón;
+celebrar contigo lo pequeño un mensaje, una mirada, un “ya llegué”
+y lo grande: los sueños que hoy son bosquejo y mañana serán nuestra casa.
+
+Si el día se nubla, te llevo sol en cada pétalo; si el viento sopla fuerte,
+te cuido el pelo y también el alma. Si dudas, te recuerdo quién eres;
+si te cansas, te ofrezco mi hombro; si te pierdes, te sostengo la brújula.
+Quiero ser paz en tus tormentas, chispa en tus días grises
+y la voz que te dice “estoy aquí” incluso cuando no haga falta decirlo.
+
+Te prometo escuchar sin prisas, hablar con respeto y elegirte con calma.
+Prometo cuidar nuestras diferencias, porque en ellas caben nuevas formas de querernos.
+Prometo reír a carcajadas, pedir perdón cuando me equivoque,
+y volver a intentar todas las veces que haga falta.
+Prometo construir contigo una vida amable: domingos de película,
+desayunos a destiempo, una planta en la ventana, fotos borrosas y abrazos claros.
+
+Me quedo con todo lo que eres y con todo lo que seremos:
+los viajes que aún no hicimos, las canciones que bailaremos,
+los proyectos que inventaremos al borde de la cama.
+Quiero acompañarte en tus metas, guardarte en mis planes,
+y escribir a tu lado las páginas que todavía no existen.
+
+Flores amarillas, porque eres mi primavera;
+porque cada pétalo es una razón y cada razón tiene tu nombre.
+Flores amarillas para iluminarte por dentro,
+para recordar que el amor también es sencillo y tibio como el café de la tarde.
+
+En este 21 y en todos los que vengan, te elijo, te cuido y te amo.
+Porque sí, porque tú.
+Hoy, mañana y siempre, mi amor.</p>
+
+      <div class="gallery" aria-label="Nuestras fotos">
+        <figure class="polaroid"><img src="fotos/foto1.jpeg" alt="Juntos, sonriendo"></figure>
+        <figure class="polaroid"><img src="fotos/foto2.jpeg" alt="Un beso tierno"></figure>
+        <figure class="polaroid"><img src="fotos/foto3.jpeg" alt="Cita en cafetería"></figure>
+      </div>
+</section>
+  </article>
+</div>
+
+<audio id="bgm" src="audio/floricienta-flores-amarillas.mp3" preload="auto" playsinline webkit-playsinline loop></audio>
+
+<div id="soundGate" role="dialog" aria-live="polite" style="display:none">
+  <div class="box">
+    <div>🔊 Activa el sonido para escuchar <strong>Flores Amarillas</strong></div>
+    <button id="unlockSound">Activar sonido</button>
+    <div id="diag"></div>
+  </div>
+</div>
+
+<script>
+function sunflower(h){
+  return `<svg viewBox="0 0 140 520" width="140" height="${h}" class="plant">
+    <g>
+      <rect x="66" y="${h-200}" width="8" height="240" fill="#2e6b2e"/>
+      <path d="M70 ${h-140} C 30 ${h-160}, 20 ${h-180}, 40 ${h-200}" stroke="#2e6b2e" stroke-width="8" fill="none"/>
+      <path d="M74 ${h-100} C 120 ${h-130}, 130 ${h-150}, 102 ${h-170}" stroke="#2e6b2e" stroke-width="8" fill="none"/>
+      <g fill="#F6C90E" stroke="#D6AD00" stroke-width="2" transform="translate(62,${h-200})">
+        <ellipse rx="16" ry="40" transform="rotate(0) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(45) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(90) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(135) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(180) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(225) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(270) translate(0,-22)"/>
+        <ellipse rx="16" ry="40" transform="rotate(315) translate(0,-22)"/>
+      </g>
+      <circle cx="62" cy="${h-200}" r="16" fill="#7a5a00"/>
+      <circle cx="62" cy="${h-200}" r="10" fill="#ffd84d"/>
+    </g>
+  </svg>`;
+}
+function fillLayer(el, count, variance){
+  const w = innerWidth; let html='';
+  for(let i=0;i<count;i++){
+    const left = (i+0.5)*(w/count) + (Math.random()-0.5)*variance;
+    const h = 440 + Math.random()*140;
+    html += `<div style="position:absolute; left:${left}px; bottom:-6px">${sunflower(h)}</div>`;
+  }
+  el.innerHTML = html;
+}
+const back = document.getElementById('layerBack');
+const mid = document.getElementById('layerMid');
+const front = document.getElementById('layerFront');
+function buildField(){ fillLayer(back, 12, 70); fillLayer(mid, 10, 80); fillLayer(front, 8, 90); }
+buildField(); addEventListener('resize', buildField);
+addEventListener('pointermove', (e)=>{ const x=(e.clientX/innerWidth-0.5)*12; back.style.transform=`translateX(${x*0.5}px)`; mid.style.transform=`translateX(${x*0.8}px)`; front.style.transform=`translateX(${x}px)`; });
+
+const canvas=document.getElementById('petalsCanvas'), ctx=canvas.getContext('2d');
+let W,H; function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; } resize(); addEventListener('resize', resize);
+let petals=[]; function rand(a,b){return a+Math.random()*(b-a)}
+function Petal(){ this.x=rand(-W*0.1,W*1.1); this.y=rand(-80,-10); this.w=rand(10,22); this.h=this.w*1.5; this.vx=rand(-0.4,0.7); this.vy=rand(0.7,2.0); this.rot=rand(0,Math.PI*2); this.spin=rand(-0.03,0.03); this.life=0; this.max=rand(8,14); }
+Petal.prototype.step=function(dt){ const wind=Math.sin((this.y+performance.now()*0.001)*0.6)*0.16; this.x+=(this.vx+wind)*dt*60; this.y+=this.vy+0.03*dt*60; this.rot+=this.spin*dt*60; this.life+=dt; return !(this.y>H+40||this.life>this.max); }
+Petal.prototype.draw=function(){ const g=ctx.createRadialGradient(this.x,this.y,this.w*0.1,this.x,this.y,this.w); g.addColorStop(0,'#fffbe6'); g.addColorStop(0.4,'#F6C90E'); g.addColorStop(1,'#D6AD00'); ctx.save(); ctx.translate(this.x,this.y); ctx.rotate(this.rot); ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(0,-this.h*0.5); ctx.bezierCurveTo(this.w*0.9,-this.h*0.3,this.w*0.9,this.h*0.3,0,this.h*0.6); ctx.bezierCurveTo(-this.w*0.9,this.h*0.3,-this.w*0.9,-this.h*0.3,0,-this.h*0.5); ctx.closePath(); ctx.fill(); ctx.restore(); }
+let last=performance.now(), frameCount=0, lastCheck=performance.now(), scale=1.0;
+function loop(t){ const dt=Math.min(0.05,(t-last)/1000); last=t; ctx.clearRect(0,0,W,H);
+  for(let i=petals.length-1;i>=0;i--){ if(!petals[i].step(dt)) petals.splice(i,1); } petals.forEach(p=>p.draw());
+  frameCount++; if(t-lastCheck>2000){ const fps=(frameCount*1000)/(t-lastCheck); if(fps<40) scale=Math.max(0.6,scale-0.1); if(fps>54) scale=Math.min(1.3,scale+0.1); frameCount=0; lastCheck=t; }
+  requestAnimationFrame(loop);
+} requestAnimationFrame(loop);
+function rain(count=360){ for(let i=0;i<count*scale;i++) petals.push(new Petal()); }
+
+const bgm=document.getElementById('bgm'); const gate=document.getElementById('soundGate'); const unlock=document.getElementById('unlockSound'); const diag=document.getElementById('diag');
+let audioStarted=false; bgm.volume=0; function fadeIn(){ const iv=setInterval(()=>{ bgm.volume=Math.min(0.5,(bgm.volume||0)+0.04); if(bgm.volume>=0.5) clearInterval(iv); },160); }
+async function startMusic(){ if(audioStarted) return; try{ await bgm.play(); fadeIn(); audioStarted=true; gate.style.display='none'; }catch(e){ gate.style.display='flex'; diag.textContent = "No se pudo reproducir automáticamente.\nEstado: readyState="+bgm.readyState+" networkState="+bgm.networkState+(bgm.error?(" error.code="+bgm.error.code):"")+"\nRuta: "+bgm.currentSrc; } }
+unlock.addEventListener('click', startMusic);
+function primeOnce(){ startMusic(); window.removeEventListener('pointerdown', primeOnce); window.removeEventListener('touchstart', primeOnce); window.removeEventListener('mousedown', primeOnce); window.removeEventListener('keydown', keyPrime); }
+function keyPrime(e){ if(e.key==='Enter'||e.key===' '){ startMusic(); window.removeEventListener('pointerdown', primeOnce); window.removeEventListener('touchstart', primeOnce); window.removeEventListener('mousedown', primeOnce); window.removeEventListener('keydown', keyPrime); } }
+window.addEventListener('pointerdown', primeOnce, {passive:true});
+window.addEventListener('touchstart', primeOnce, {passive:true});
+window.addEventListener('mousedown', primeOnce, {passive:true});
+window.addEventListener('keydown', keyPrime);
+
+const openArea=document.getElementById('openArea'); const env=document.getElementById('env'); const bouquet=document.getElementById('bouquet');
+const phase1=document.getElementById('phase1'); const phase2=document.getElementById('phase2');
+function typewriter(el,text,speed=16){ el.textContent=''; let i=0; const int=setInterval(()=>{ el.textContent+=text.charAt(i++); if(i>=text.length){ clearInterval(int); el.classList.remove('type'); } },speed); }
+function revealPolaroids(){ document.querySelectorAll('.polaroid').forEach((p,i)=> setTimeout(()=> p.classList.add('show'),200+i*240)); }
+function toPhase2(){ if(!phase2.classList.contains('active')){ phase1.classList.remove('active'); phase2.classList.add('active'); typewriter(document.getElementById('msg2'), document.getElementById('msg2').textContent); revealPolaroids(); rain(320); } }
+function grandShow(){ rain(420); setTimeout(()=>rain(300),1200); setTimeout(()=>rain(260),2400); }
+
+function openEnvelope(){ if(document.body.classList.contains('show')) return;
+  env.classList.add('opened');
+  startMusic();
+  setTimeout(()=>{
+    document.body.classList.add('show');
+    bouquet.classList.add('show');
+    grandShow();
+    const msg1=document.getElementById('msg1'); typewriter(msg1, msg1.textContent);
+    setTimeout(()=> bouquet.classList.add('hide'), 5000);
+    setTimeout(()=>{ toPhase2(); }, 20000);
+  },650);
+}
+openArea.addEventListener('click', openEnvelope);
+openArea.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openEnvelope(); }});
+openArea.tabIndex=0;
+
+bgm.addEventListener('error', ()=>{ gate.style.display='flex'; const codes={1:"ABORTED",2:"NETWORK",3:"DECODE",4:"SRC_NOT_SUPPORTED"}; diag.textContent = "Error de audio: "+(codes[bgm.error?.code]||"DESCONOCIDO")+"\nRuta: "+bgm.currentSrc; });
+</script>
+</body>
+</html>
